@@ -1,70 +1,59 @@
-import { Zap, Check } from "lucide-react"
+"use client";
 
+import { CheckCircle2, Coins } from "lucide-react";
+import { useState } from "react";
+
+// Interface wajib
 interface Mission {
-  id: number
-  title: string
-  xp: number
-  icon: string
-  status: "active" | "completed"
+  id: number;
+  title: string;
+  xp: number;
+  completed: boolean;
+  type: "daily" | "weekly";
+  emoji: string;
 }
 
-const missions: Mission[] = [
-  { id: 1, title: "Save $10", xp: 50, icon: "💾", status: "active" },
-  { id: 2, title: "Read Crypto News", xp: 30, icon: "📰", status: "active" },
-  { id: 3, title: "Complete Daily Check-in", xp: 25, icon: "✅", status: "completed" },
-  { id: 4, title: "Track Expenses", xp: 75, icon: "📊", status: "active" },
-  { id: 5, title: "Refer a Friend", xp: 100, icon: "👥", status: "active" },
-  { id: 6, title: "Invest $100", xp: 150, icon: "📈", status: "active" },
-]
+export default function MissionsScreen() {
+  const [missions, setMissions] = useState<Mission[]>([
+    { id: 1, title: "Save Rp 50k Today", xp: 50, completed: false, type: "daily", emoji: "💰" },
+    { id: 2, title: "Read Crypto News", xp: 10, completed: false, type: "daily", emoji: "📰" },
+  ]);
 
-export default function Missions() {
+  const handleClaim = (id: number) => {
+    setMissions(missions.map((m) => (m.id === id ? { ...m, completed: true } : m)));
+  };
+
   return (
-    <main className="p-6 md:p-8">
-      <header className="mb-8">
-        <h2 className="text-3xl font-bold flex items-center gap-2 mb-2">
-          <Zap size={32} className="text-primary" />
-          <span className="text-balance">Daily Quests</span>
-        </h2>
-        <p className="text-muted-foreground">Complete tasks to earn XP and unlock rewards</p>
-      </header>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="max-w-4xl">
+      <h1 className="text-3xl font-bold mb-6">Missions</h1>
+      <div className="space-y-4">
         {missions.map((mission) => (
-          <div
-            key={mission.id}
-            className={`glass-dark p-6 rounded-2xl border transition-all ${
-              mission.status === "completed" ? "border-white/5 opacity-60" : "border-white/10 hover:border-primary/50"
-            }`}
-          >
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <span className="text-3xl">{mission.icon}</span>
-                <div>
-                  <h4 className={`font-semibold ${mission.status === "completed" ? "line-through" : ""}`}>
-                    {mission.title}
-                  </h4>
-                  <p className="text-sm text-primary font-bold">+{mission.xp} XP</p>
+          <div key={mission.id} className="bg-[#1A1A1A] p-4 rounded-2xl border border-white/5 flex items-center justify-between shadow-lg">
+            <div className="flex items-center gap-4">
+              <span className="text-3xl bg-white/5 p-2 rounded-xl">{mission.emoji}</span>
+              <div>
+                <h3 className="font-bold text-white">{mission.title}</h3>
+                <div className="flex items-center gap-1 text-[#FBBF24] text-xs font-bold mt-1">
+                  <Coins size={14} /> +{mission.xp} XP
                 </div>
               </div>
-              {mission.status === "completed" && (
-                <div className="p-2 bg-emerald-500/20 rounded-lg">
-                  <Check className="text-emerald-400" size={20} />
-                </div>
-              )}
             </div>
-
-            {mission.status === "active" ? (
-              <button className="w-full py-2 bg-primary text-primary-foreground rounded-lg font-semibold hover:opacity-90 transition-opacity">
-                Start Quest
-              </button>
+            
+            {mission.completed ? (
+              <div className="px-4 py-2 bg-green-500/10 text-green-500 rounded-xl flex items-center gap-2 text-sm font-bold">
+                <CheckCircle2 size={16} /> Done
+              </div>
             ) : (
-              <button className="w-full py-2 bg-emerald-500/20 text-emerald-400 rounded-lg font-semibold cursor-not-allowed">
-                Completed
+              <button 
+                onClick={() => handleClaim(mission.id)}
+                className="bg-[#3B82F6] hover:bg-blue-600 text-white px-6 py-2 rounded-xl font-bold text-sm transition-all"
+              >
+                Start
               </button>
             )}
           </div>
         ))}
       </div>
-    </main>
-  )
+    </div>
+  );
 }

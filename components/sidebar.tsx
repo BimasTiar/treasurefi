@@ -1,69 +1,63 @@
-"use client"
+"use client";
 
-import { Home, Zap, Gift, User, LogOut } from "lucide-react"
+import { Home, Zap, Gift, User, LogOut } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-interface SidebarProps {
-  currentView: "home" | "missions" | "rewards" | "profile"
-  setCurrentView: (view: "home" | "missions" | "rewards" | "profile") => void
-}
+export default function Sidebar() {
+  const pathname = usePathname();
 
-export default function Sidebar({ currentView, setCurrentView }: SidebarProps) {
-  const navItems = [
-    { id: "home", label: "Home", icon: Home },
-    { id: "missions", label: "Missions", icon: Zap },
-    { id: "rewards", label: "Rewards", icon: Gift },
-    { id: "profile", label: "Profile", icon: User },
-  ]
+  const links = [
+    { href: "/", label: "Home", icon: Home },
+    { href: "/missions", label: "Missions", icon: Zap },
+    { href: "/rewards", label: "Rewards", icon: Gift },
+    { href: "/profile", label: "Profile", icon: User },
+  ];
 
   return (
-    <div className="h-full flex flex-col bg-sidebar text-sidebar-foreground p-6">
+    <aside className="fixed left-0 top-0 h-screen w-64 bg-[#09090b] border-r border-white/10 flex flex-col p-6 z-50">
       {/* Logo */}
-      <div className="mb-12 flex items-center gap-2">
-        <div className="text-3xl">💰</div>
+      <div className="flex items-center gap-3 mb-10">
+        <span className="text-3xl">💰</span>
         <div>
-          <h1 className="text-2xl font-bold text-primary">TreasureFi</h1>
-          <p className="text-xs text-muted-foreground">Quest for Gold</p>
+          <h1 className="text-xl font-bold text-[#FBBF24]">TreasureFi</h1>
+          <p className="text-[10px] text-gray-500">Quest for Gold</p>
         </div>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 space-y-3">
-        {navItems.map((item) => {
-          const Icon = item.icon
-          const isActive = currentView === item.id
+      {/* Menu */}
+      <nav className="space-y-1 flex-1">
+        {links.map((link) => {
+          const Icon = link.icon;
+          const isActive = pathname === link.href;
           return (
-            <button
-              key={item.id}
-              onClick={() => setCurrentView(item.id as any)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                 isActive
-                  ? "bg-sidebar-primary/20 text-primary border border-primary/50"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent/10"
+                  ? "bg-[#FBBF24]/10 text-[#FBBF24] border border-[#FBBF24]/20"
+                  : "text-gray-400 hover:text-white hover:bg-white/5"
               }`}
             >
               <Icon size={20} />
-              <span className="font-medium">{item.label}</span>
-            </button>
-          )
+              <span className="font-medium">{link.label}</span>
+            </Link>
+          );
         })}
       </nav>
 
       {/* User Profile */}
-      <div className="border-t border-sidebar-border pt-4">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-sm font-bold">
-            AJ
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold truncate">Alex Johnson</p>
-            <p className="text-xs text-muted-foreground">Level 12</p>
-          </div>
+      <div className="border-t border-white/10 pt-4 mt-auto flex items-center gap-3">
+        <div className="w-10 h-10 rounded-full bg-[#FBBF24] flex items-center justify-center text-black font-bold">
+          AJ
         </div>
-        <button className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-sidebar-accent/10 transition-colors text-sm text-sidebar-foreground">
-          <LogOut size={16} />
-          <span>Sign Out</span>
-        </button>
+        <div className="flex-1 overflow-hidden">
+          <p className="text-sm font-bold truncate">Alex Johnson</p>
+          <p className="text-xs text-gray-500">Level 12</p>
+        </div>
+        <LogOut size={18} className="text-gray-500 hover:text-white cursor-pointer" />
       </div>
-    </div>
-  )
+    </aside>
+  );
 }

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
-// Pastikan tidak ada import komponen Client di sini jika tidak perlu
+import Sidebar from "@/components/Sidebar"; // Import Sidebar
+import "./main.css"; // Pastikan nama file CSS Anda 'styles.css' atau sesuaikan
+import Providers from "./providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,8 +19,19 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        {/* Pastikan tidak ada elemen aneh yang membungkus children */}
-        {children} 
+        <Providers>
+          <div className="flex min-h-screen bg-[#09090b] text-white">
+            
+            {/* Sidebar di Kiri */}
+            <Sidebar />
+            
+            {/* Konten Utama di Kanan (Geser 64 unit / 256px) */}
+            <main className="flex-1 ml-64 p-8 overflow-y-auto">
+              {children}
+            </main>
+
+          </div>
+        </Providers>
       </body>
     </html>
   );
