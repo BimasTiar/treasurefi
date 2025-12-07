@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import Sidebar from "@/components/Sidebar"; // Import Sidebar
+import Sidebar from "@/components/sidebar"; // Import Sidebar
 import "./main.css"; // Pastikan nama file CSS Anda 'styles.css' atau sesuaikan
 import Providers from "./providers";
 
