@@ -1,8 +1,8 @@
 "use client";
 
-import { TrendingUp, Wallet, ArrowUpRight, ArrowDownRight, Zap } from "lucide-react";
+import { TrendingUp, ArrowUpRight, ArrowDownRight, Zap } from "lucide-react";
 
-// 1. Definisi Tipe Data (Wajib biar ga merah)
+// 1. Definisi Tipe Data
 interface Goal {
   id: number;
   name: string;
@@ -19,26 +19,27 @@ export default function Home() {
   ];
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-8 animate-in fade-in duration-500 max-w-7xl mx-auto">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-white">Welcome Back, Kepala Suku!</h1>
-        <p className="text-gray-400">Track your financial quest and earn rewards</p>
+        <h1 className="text-3xl font-bold text-foreground">Welcome Back, Kepala Suku!</h1>
+        <p className="text-muted-foreground">Track your financial quest and earn rewards</p>
       </div>
 
       {/* Hero Card (Saldo) */}
-      <div className="relative overflow-hidden rounded-3xl bg-[#121212] border border-white/10 p-8 shadow-2xl">
-        <div className="absolute top-0 right-0 p-8 opacity-20">
-          <Zap size={100} className="text-[#FBBF24]" />
+      <div className="relative overflow-hidden rounded-3xl bg-card border border-border p-8 shadow-2xl">
+        <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+          <Zap size={120} className="text-primary" />
         </div>
-        <p className="text-gray-400 font-medium mb-2">Total Balance</p>
+        
+        <p className="text-muted-foreground font-medium mb-2">Total Balance</p>
         <h2 className="text-5xl font-extrabold text-white mb-6">IDR 24,500,000</h2>
         
-        <div className="flex gap-4">
-          <button className="bg-[#FBBF24] hover:bg-[#d97706] text-black font-bold py-2 px-6 rounded-xl transition-all shadow-[0_0_20px_rgba(251,191,36,0.3)]">
+        <div className="flex gap-4 relative z-10">
+          <button className="bg-primary hover:bg-yellow-500 text-primary-foreground font-bold py-2.5 px-6 rounded-xl transition-all shadow-lg shadow-primary/20">
             Deposit
           </button>
-          <button className="bg-transparent border border-white/20 hover:bg-white/5 text-white font-bold py-2 px-6 rounded-xl transition-all">
+          <button className="bg-secondary/50 border border-border hover:bg-secondary text-foreground font-bold py-2.5 px-6 rounded-xl transition-all">
             Withdraw
           </button>
         </div>
@@ -46,53 +47,53 @@ export default function Home() {
 
       {/* Stats Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-[#1A1A1A] p-6 rounded-2xl border border-white/5 shadow-lg">
+        <div className="bg-card p-6 rounded-2xl border border-border shadow-sm">
           <div className="flex justify-between items-center mb-4">
-            <p className="text-gray-400">Total Income</p>
+            <p className="text-muted-foreground">Total Income</p>
             <div className="bg-green-500/10 p-2 rounded-lg"><ArrowUpRight className="text-green-500" /></div>
           </div>
-          <h3 className="text-2xl font-bold text-white">IDR 32,750,000</h3>
+          <h3 className="text-2xl font-bold text-foreground">IDR 32,750,000</h3>
         </div>
-        <div className="bg-[#1A1A1A] p-6 rounded-2xl border border-white/5 shadow-lg">
+        <div className="bg-card p-6 rounded-2xl border border-border shadow-sm">
           <div className="flex justify-between items-center mb-4">
-            <p className="text-gray-400">Total Spending</p>
+            <p className="text-muted-foreground">Total Spending</p>
             <div className="bg-red-500/10 p-2 rounded-lg"><ArrowDownRight className="text-red-500" /></div>
           </div>
-          <h3 className="text-2xl font-bold text-white">IDR 8,250,000</h3>
+          <h3 className="text-2xl font-bold text-foreground">IDR 8,250,000</h3>
         </div>
       </div>
 
       {/* Active Missions (Goals) */}
       <div>
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-bold text-white flex items-center gap-2">
-            <Zap className="text-[#FBBF24]" fill="#FBBF24" /> Active Missions
+          <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
+            <Zap className="text-primary fill-primary" /> Active Missions
           </h3>
-          <button className="text-[#FBBF24] text-sm hover:underline">View All</button>
+          <button className="text-primary text-sm font-bold hover:underline">View All</button>
         </div>
 
         <div className="space-y-4">
           {goals.map((goal) => (
-            <div key={goal.id} className="bg-[#1A1A1A] border border-white/5 p-5 rounded-2xl shadow-md hover:border-[#FBBF24]/30 transition-all">
+            <div key={goal.id} className="bg-card border border-border p-5 rounded-2xl shadow-sm hover:border-primary/30 transition-all cursor-pointer">
               <div className="flex justify-between items-center mb-3">
                 <div className="flex items-center gap-3">
-                  <span className="text-2xl">{goal.emoji}</span>
+                  <span className="text-2xl bg-secondary/30 p-2 rounded-lg">{goal.emoji}</span>
                   <div>
-                    <h4 className="font-bold text-white">{goal.name}</h4>
-                    <p className="text-xs text-gray-400">
+                    <h4 className="font-bold text-foreground">{goal.name}</h4>
+                    <p className="text-xs text-muted-foreground font-mono">
                       IDR {goal.current.toLocaleString()} / {goal.target.toLocaleString()}
                     </p>
                   </div>
                 </div>
-                <span className="text-[#FBBF24] font-bold bg-[#FBBF24]/10 px-3 py-1 rounded-lg text-sm">
+                <span className="text-primary font-bold bg-primary/10 px-3 py-1 rounded-lg text-sm border border-primary/20">
                   {goal.progress}%
                 </span>
               </div>
               
-              {/* Progress Bar Anti-Error (Pakai Style Inline) */}
-              <div className="w-full h-3 bg-black rounded-full overflow-hidden border border-white/5">
+              {/* Progress Bar */}
+              <div className="w-full h-3 bg-secondary rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-gradient-to-r from-blue-600 to-[#FBBF24] transition-all duration-1000 relative"
+                  className="h-full bg-primary transition-all duration-1000 ease-out relative"
                   style={{ width: `${goal.progress}%` }} 
                 >
                     <div className="absolute inset-0 bg-white/20 animate-pulse"></div>

@@ -17,6 +17,8 @@ export default function MissionsScreen() {
   const [missions, setMissions] = useState<Mission[]>([
     { id: 1, title: "Save Rp 50k Today", xp: 50, completed: false, type: "daily", emoji: "💰" },
     { id: 2, title: "Read Crypto News", xp: 10, completed: false, type: "daily", emoji: "📰" },
+    { id: 3, title: "Track Expenses", xp: 40, completed: false, type: "daily", emoji: "📊" }, 
+    { id: 4, title: "Invite a Friend", xp: 100, completed: false, type: "weekly", emoji: "🤝" },
   ]);
 
   const handleClaim = (id: number) => {

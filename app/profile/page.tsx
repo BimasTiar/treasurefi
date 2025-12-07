@@ -33,7 +33,7 @@ export default function ProfilePage() {
         
         <h2 className="text-2xl font-bold text-white">Kepala Suku</h2>
         <p className="text-[#FBBF24] font-bold text-sm mt-1 bg-[#FBBF24]/10 px-3 py-1 rounded-full border border-[#FBBF24]/20">
-          Level 99 Saver
+          Level 10 Saver
         </p>
 
         <div className="mt-8 w-full space-y-4">
