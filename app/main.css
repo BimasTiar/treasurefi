@@ -16,7 +16,7 @@
  
     /* TREASURE GOLD COLOR */
     --primary: 47 95% 50%;      /* #FBBF24 (Amber/Gold) */
-    --primary-foreground: 240 5.9% 10%; /* Dark text on gold buttons */
+    --primary-foreground: 240 5.9% 10%;
  
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
@@ -34,10 +34,20 @@
     --input: 240 3.7% 15.9%;
     --ring: 240 4.9% 83.9%;
  
-    --radius: 0.75rem; /* Rounded corners */
+    --radius: 0.75rem; 
   }
 }
 
 body {
   @apply bg-background text-foreground;
+
+  /* --- TAMBAHAN BACKGROUND GLOW --- */
+  background-image: 
+    /* Cahaya Emas di Kiri Atas */
+    radial-gradient(circle at 15% 10%, rgba(251, 191, 36, 0.15), transparent 40%),
+    /* Cahaya Biru di Kanan Bawah */
+    radial-gradient(circle at 85% 90%, rgba(59, 130, 246, 0.15), transparent 40%);
+  
+  /* Agar background tetap diam saat discroll */
+  background-attachment: fixed;
 }

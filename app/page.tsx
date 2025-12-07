@@ -15,7 +15,7 @@ interface Goal {
 }
 
 export default function Home() {
-  // 3. State untuk Modal (Ini yang bikin merah kalau tidak ada)
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const goals: Goal[] = [
