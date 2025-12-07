@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation"; 
 import { Home, Zap, Gift, User, LogOut, ScrollText } from "lucide-react";
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter(); 
 
   const menuItems = [
     { name: "Home", href: "/", icon: Home },
@@ -16,11 +17,18 @@ export default function Sidebar() {
     { name: "Activity", href: "/activity", icon: ScrollText },
   ];
 
+  // 3. Fungsi Logout
+  const handleLogout = () => {
+    // Hapus data login (token) dari penyimpanan browser
+    localStorage.removeItem("user_token"); 
+    // Lempar user ke halaman Login
+    router.push("/auth/signin"); 
+  };
+
   return (
     <aside className="w-64 bg-[#09090b] border-r border-white/10 flex flex-col h-screen fixed left-0 top-0 z-50">
       {/* 1. LOGO */}
       <div className="p-6 flex items-center gap-3">
-        {/* Jika belum ada logo.png, pakai emoji dulu biar ga error gambar pecah */}
         <div className="text-3xl">💰</div> 
         <div>
           <h1 className="text-xl font-bold text-[#FBBF24]">TreasureFi</h1>
@@ -61,7 +69,14 @@ export default function Sidebar() {
             <p className="text-sm font-bold text-white">Kepala Suku</p>
             <p className="text-xs text-[#FBBF24]">Level 100</p>
           </div>
-          <LogOut size={16} className="text-gray-500 ml-auto hover:text-red-500 cursor-pointer" />
+          
+          {/* 4. Pasang onClick di sini */}
+          <LogOut 
+            size={16} 
+            className="text-gray-500 ml-auto hover:text-red-500 cursor-pointer transition-colors" 
+            onClick={handleLogout}
+          />
+          
         </div>
       </div>
     </aside>

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { TrendingUp, ArrowUpRight, ArrowDownRight, Zap } from "lucide-react";
-import NewEntryModal from "@/components/new-entry-modal";
+import NewEntryModal from "@/components/new-entry-modal"; 
 
 // 1. Definisi Tipe Data
 interface Goal {
@@ -15,7 +15,6 @@ interface Goal {
 }
 
 export default function Home() {
-  
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const goals: Goal[] = [
@@ -33,7 +32,6 @@ export default function Home() {
           <p className="text-muted-foreground">Track your financial quest and earn rewards</p>
         </div>
         
-        {/* TOMBOL UNTUK MEMBUKA MODAL */}
         <button 
           onClick={() => setIsModalOpen(true)}
           className="bg-primary hover:bg-yellow-500 text-primary-foreground font-bold py-2.5 px-6 rounded-xl transition-all shadow-lg shadow-primary/20 flex items-center gap-2"
@@ -42,11 +40,11 @@ export default function Home() {
         </button>
       </div>
 
-      {/* Hero Card (Saldo) */}
+      {/* Hero Card (Saldo) - PETIR DIHAPUS */}
       <div className="relative overflow-hidden rounded-3xl bg-card border border-border p-8 shadow-2xl">
-        <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
-          <Zap size={120} className="text-primary" />
-        </div>
+        
+        {/* BAGIAN INI SAYA HAPUS (Glow/Petir Background) agar bersih */}
+        {/* <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none"> <Zap size={120} /> </div> */}
         
         <div className="relative z-10">
           <p className="text-muted-foreground font-medium mb-2">Total Balance</p>
@@ -54,7 +52,7 @@ export default function Home() {
           
           <div className="flex gap-4">
             <button 
-              onClick={() => setIsModalOpen(true)} // Tombol Deposit juga buka modal
+              onClick={() => setIsModalOpen(true)} 
               className="bg-primary hover:bg-yellow-500 text-primary-foreground font-bold py-2.5 px-6 rounded-xl transition-all shadow-lg shadow-primary/20"
             >
               Deposit
@@ -123,7 +121,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* KOMPONEN MODAL */}
       <NewEntryModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
 
     </div>
