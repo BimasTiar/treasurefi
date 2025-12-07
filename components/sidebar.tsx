@@ -59,7 +59,7 @@ export default function Sidebar() {
           </div>
           <div className="overflow-hidden">
             <p className="text-sm font-bold text-white">Kepala Suku</p>
-            <p className="text-xs text-[#FBBF24]">Level 99</p>
+            <p className="text-xs text-[#FBBF24]">Level 100</p>
           </div>
           <LogOut size={16} className="text-gray-500 ml-auto hover:text-red-500 cursor-pointer" />
         </div>
