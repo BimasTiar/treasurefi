@@ -3,9 +3,10 @@
 import { useState } from "react"
 import {
   DollarSign, X, UtensilsCrossed, Car, ShoppingBag, Receipt,
-  Gamepad2, Heart, Briefcase, TrendingUp, Gift, Activity, MoreHorizontal,
+  Gamepad2, Heart, Briefcase, TrendingUp, Gift, Activity, 
+  MoreHorizontal,
 } from "lucide-react"
-// 1. Import toast
+
 import { toast } from "sonner"
 
 interface NewEntryModalProps {
