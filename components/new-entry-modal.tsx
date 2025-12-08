@@ -22,6 +22,7 @@ const expenseCategories = [
   { name: "Bills", icon: Receipt },
   { name: "Entertainment", icon: Gamepad2 },
   { name: "Health", icon: Heart },
+  { name: "Other", icon: MoreHorizontal },
 ]
 
 const incomeCategories = [
