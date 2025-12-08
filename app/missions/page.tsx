@@ -3,6 +3,7 @@
 import { CheckCircle2, Coins } from "lucide-react";
 import { useState } from "react";
 
+
 interface Mission {
   id: number;
   title: string;
@@ -26,12 +27,12 @@ export default function MissionsPage() {
 
   return (
     <div className="max-w-4xl mx-auto animate-in fade-in duration-500">
-      <h1 className="text-3xl font-bold mb-2">Missions</h1>
+      <h1 className="text-3xl font-bold mb-2 text-white">Missions</h1>
       <p className="text-gray-400 mb-8">Complete quests to earn XP and rewards</p>
 
       <div className="space-y-4">
         {missions.map((mission) => (
-          <div key={mission.id} className="bg-[#1A1A1A] p-5 rounded-2xl border border-white/5 flex items-center justify-between shadow-lg hover:border-[#FBBF24]/20 transition-all">
+          <div key={mission.id} className="bg-[#18181b] p-5 rounded-2xl border border-white/10 flex items-center justify-between shadow-lg hover:border-[#FBBF24]/20 transition-all">
             <div className="flex items-center gap-4">
               <span className="text-3xl bg-white/5 p-3 rounded-2xl">{mission.emoji}</span>
               <div>

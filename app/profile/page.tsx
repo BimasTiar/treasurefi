@@ -8,7 +8,6 @@ export default function ProfilePage() {
   const [copied, setCopied] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
 
-  // State Data User (Bisa Diedit)
   const [user, setUser] = useState<UserData>({
     name: "Kepala Suku",
     title: "Big Boss",
@@ -29,17 +28,15 @@ export default function ProfilePage() {
   return (
     <div className="max-w-4xl mx-auto animate-in fade-in duration-700 pb-10">
       
-      {/* 1. HEADER PROFILE CARD */}
+      {/* HEADER PROFILE CARD */}
       <div className="bg-[#18181b] border border-white/10 rounded-3xl p-8 mb-8 relative overflow-hidden text-center md:text-left">
-        {/* Background Glow */}
         <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-[#3B82F6]/10 to-transparent pointer-events-none" />
 
         <div className="relative flex flex-col md:flex-row items-center gap-8">
-          {/* Avatar Besar */}
           <div className="relative">
             <div className="w-32 h-32 rounded-full bg-gradient-to-br from-[#FBBF24] to-[#3B82F6] p-[3px] shadow-2xl">
               <div className="w-full h-full bg-[#121212] rounded-full flex items-center justify-center text-5xl font-bold text-white">
-                {user.name.charAt(0)}J
+                {user.name.charAt(0)}
               </div>
             </div>
             <div className="absolute -bottom-2 -right-2 bg-[#FBBF24] text-black text-xs font-bold px-3 py-1 rounded-full border-4 border-[#18181b]">
@@ -47,7 +44,6 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Info User */}
           <div className="flex-1">
             <h1 className="text-3xl font-bold text-white mb-2">{user.name}</h1>
             <p className="text-gray-400 mb-4 max-w-lg mx-auto md:mx-0">{user.bio}</p>
@@ -84,7 +80,7 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* 2. STATS GRID */}
+      {/* STATS GRID */}
       <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
         <Zap className="text-[#FBBF24]" /> Your Stats
       </h3>
@@ -98,29 +94,6 @@ export default function ProfilePage() {
           <div key={idx} className="bg-[#18181b] border border-white/5 p-5 rounded-2xl text-center hover:border-white/10 transition-all">
             <p className={`text-3xl font-bold ${stat.color} mb-1`}>{stat.value}</p>
             <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">{stat.label}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* 3. ACHIEVEMENTS */}
-      <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-        <Trophy className="text-[#FBBF24]" /> Unlocked Achievements
-      </h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {[
-          { title: "First Steps", desc: "Create your first transaction", icon: "🚀" },
-          { title: "Thousand Club", desc: "Save your first $1,000", icon: "💰" },
-          { title: "Investor", desc: "Complete your first investment", icon: "📈" },
-          { title: "Quest Master", desc: "Complete 10 daily quests", icon: "⚔️" },
-        ].map((item, idx) => (
-          <div key={idx} className="bg-[#18181b] border border-white/5 p-5 rounded-2xl flex items-center gap-4 hover:bg-white/5 transition-all cursor-default">
-            <div className="w-12 h-12 bg-black rounded-xl flex items-center justify-center text-2xl border border-white/10">
-              {item.icon}
-            </div>
-            <div>
-              <h4 className="font-bold text-white">{item.title}</h4>
-              <p className="text-sm text-gray-400">{item.desc}</p>
-            </div>
           </div>
         ))}
       </div>
