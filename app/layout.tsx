@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import Sidebar from "@/components/sidebar"; // Import Sidebar
-import "./main.css"; // Pastikan nama file CSS Anda 'styles.css' atau sesuaikan
+import Sidebar from "@/components/sidebar"; 
+import "./globals.css";
 import Providers from "./providers";
+// 1. Import Toaster
+import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,17 +22,21 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Providers>
-          <div className="flex min-h-screen bg-[#09090b] text-white">
-            
-            {/* Sidebar di Kiri */}
+          <div className="flex min-h-screen bg-[#09090b]">
             <Sidebar />
             
-            {/* Konten Utama di Kanan (Geser 64 unit / 256px) */}
-            <main className="flex-1 ml-64 p-8 overflow-y-auto">
+            <main className="flex-1 ml-64 p-8 overflow-y-auto h-screen text-white">
               {children}
             </main>
-
           </div>
+          
+          {/* 2. Pasang Komponen Toaster di sini */}
+          <Toaster 
+            position="top-right" 
+            theme="dark" 
+            richColors 
+            closeButton
+          />
         </Providers>
       </body>
     </html>
