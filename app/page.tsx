@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation"; // Import Router
 import { TrendingUp, ArrowUpRight, ArrowDownRight, Zap } from "lucide-react";
 import NewEntryModal from "@/components/new-entry-modal";
-import { Skeleton } from "@/components/skeleton";
+import { Skeleton } from "@/components/skeleton"; // Pastikan sudah punya komponen Skeleton
 
-// 1. Definisi Tipe Data
+// ... Interface Goal tetap sama ...
 interface Goal {
   id: number;
   name: string;
@@ -16,81 +17,66 @@ interface Goal {
 }
 
 export default function Home() {
+  const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
-  // STATE LOADING (Default: True agar loading dulu saat dibuka)
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true); // State Loading
 
-  // SIMULASI LOADING DATA (2 Detik)
+  // --- LOGIKA SATPAM (CHECK TOKEN) ---
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false); // Matikan loading setelah 2 detik
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, []);
+    // Cek apakah ada token di localStorage
+    const token = localStorage.getItem("user_token");
 
-  const goals: Goal[] = [
-    { id: 1, name: "Healing ke Bali", current: 3500000, target: 5000000, emoji: "🏖️", progress: 75 },
-    { id: 2, name: "Beli Macbook M3", current: 8000000, target: 20000000, emoji: "💻", progress: 45 },
-  ];
+    if (!token) {
+      // Jika TIDAK ADA token, tendang ke halaman Sign In
+      router.push("/auth/signin");
+    } else {
+      // Jika ADA token, izinkan masuk (Matikan loading setelah 1 detik)
+      setTimeout(() => setIsLoading(false), 1000);
+    }
+  }, [router]);
 
-  // --- TAMPILAN SAAT LOADING (SKELETON) ---
+
+  // --- TAMPILAN SAAT LOADING / CEKING TOKEN ---
   if (isLoading) {
+    // Tampilkan Skeleton atau Layar Hitam Loading
     return (
-      <div className="space-y-8 animate-in fade-in duration-500 max-w-7xl mx-auto">
-        {/* Header Skeleton */}
-        <div className="flex justify-between items-end">
-          <div className="space-y-2">
-            <Skeleton className="h-8 w-64" /> {/* Judul */}
-            <Skeleton className="h-4 w-48" /> {/* Subjudul */}
-          </div>
-          <Skeleton className="h-10 w-32 rounded-xl" /> {/* Tombol */}
-        </div>
-
-        {/* Hero Card Skeleton */}
-        <Skeleton className="h-64 w-full rounded-3xl" />
-
-        {/* Stats Row Skeleton */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Skeleton className="h-32 w-full" />
-          <Skeleton className="h-32 w-full" />
-        </div>
-
-        {/* Missions Skeleton */}
-        <div>
-          <div className="flex justify-between mb-4">
-            <Skeleton className="h-6 w-40" />
-            <Skeleton className="h-4 w-20" />
-          </div>
-          <div className="space-y-4">
-            <Skeleton className="h-24 w-full" />
-            <Skeleton className="h-24 w-full" />
-          </div>
+      <div className="flex h-screen items-center justify-center bg-[#09090b]">
+        <div className="animate-pulse flex flex-col items-center">
+            <div className="text-5xl mb-4">💰</div>
+            <p className="text-gray-500 font-bold">Verifying Treasure Key...</p>
         </div>
       </div>
     );
   }
 
-  // --- TAMPILAN ASLI (KONTEN) ---
+  // --- TAMPILAN DASHBOARD UTAMA (JIKA LOLOS CEK) ---
+  const goals: Goal[] = [
+    { id: 1, name: "Healing ke Bali", current: 3500000, target: 5000000, emoji: "🏖️", progress: 75 },
+    { id: 2, name: "Beli Macbook M3", current: 8000000, target: 20000000, emoji: "💻", progress: 45 },
+  ];
+
   return (
     <div className="space-y-8 animate-in fade-in duration-500 max-w-7xl mx-auto">
       
-      {/* Header */}
-      <div className="flex justify-between items-end">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Welcome Back, Kepala Suku!</h1>
-          <p className="text-muted-foreground">Track your financial quest and earn rewards</p>
-        </div>
-        
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="bg-primary hover:bg-yellow-500 text-primary-foreground font-bold py-2.5 px-6 rounded-xl transition-all shadow-lg shadow-primary/20 flex items-center gap-2"
-        >
-          + New Entry
-        </button>
-      </div>
-
-      {/* Hero Card (Saldo) */}
+       {/* ... (SISA KODE DASHBOARD ANDA TETAP SAMA DARI SINI KE BAWAH) ... */}
+       <div className="flex justify-between items-end">
+        {/* ... Header ... */}
+            <div>
+            <h1 className="text-3xl font-bold text-foreground">Welcome Back, Kepala Suku!</h1>
+            <p className="text-muted-foreground">Track your financial quest and earn rewards</p>
+            </div>
+            <button 
+            onClick={() => setIsModalOpen(true)}
+            className="bg-primary hover:bg-yellow-500 text-primary-foreground font-bold py-2.5 px-6 rounded-xl transition-all shadow-lg shadow-primary/20 flex items-center gap-2"
+            >
+            + New Entry
+            </button>
+       </div>
+       
+       {/* ... Lanjutkan kode Hero Card, Stats, Missions, Modal di sini ... */}
+       {/* (Copy dari kode sebelumnya) */}
+       
+       {/* Hero Card */}
       <div className="relative overflow-hidden rounded-3xl bg-card border border-border p-8 shadow-2xl">
         <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
           <Zap size={120} className="text-primary" />
@@ -102,7 +88,7 @@ export default function Home() {
           
           <div className="flex gap-4">
             <button 
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => setIsModalOpen(true)} 
               className="bg-primary hover:bg-yellow-500 text-primary-foreground font-bold py-2.5 px-6 rounded-xl transition-all shadow-lg shadow-primary/20"
             >
               Deposit
