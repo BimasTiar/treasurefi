@@ -20,7 +20,7 @@ export default function RewardsPage() {
     { id: 1, name: "Golden Chest", rarity: "legendary", unlocked: true, emoji: "📦", requirement: "Save 10k", color: "#FBBF24" },
     { id: 2, name: "Diamond Hands", rarity: "epic", unlocked: true, emoji: "💎", requirement: "30-day streak", color: "#8B5CF6" },
     { id: 3, name: "Pirate Flag", rarity: "common", unlocked: true, emoji: "🏴‍☠️", requirement: "Join App", color: "#6B7280" },
-    { id: 4, name: "Royal Crown", rarity: "legendary", unlocked: false, emoji: "👑", requirement: "Lvl 10", color: "#FBBF24" },
+    { id: 4, name: "Royal Crown", rarity: "legendary", unlocked: true, emoji: "👑", requirement: "Lvl 100", color: "#FBBF24" },
     { id: 5, name: "Ancient Map", rarity: "rare", unlocked: false, emoji: "🗺️", requirement: "50 Missions", color: "#3B82F6" },
     { id: 6, name: "Lightning", rarity: "epic", unlocked: false, emoji: "⚡", requirement: "Fast Saver", color: "#8B5CF6" },
   ]);

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Home, Zap, Gift, User, LogOut, ScrollText } from "lucide-react";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -17,20 +18,16 @@ export default function Sidebar() {
   ];
 
   const handleLogout = () => {
-    // 1. Hapus token sesi (pura-pura logout)
     localStorage.removeItem("user_token");
-    
-    // 2. Lempar user ke halaman Sign In
     router.push("/auth/signin");
   };
 
   return (
     <aside className="w-64 bg-[#09090b] border-r border-white/10 flex flex-col h-screen fixed left-0 top-0 z-50">
       
-      {/* 1. LOGO AREA */}
+      {/* 1. LOGO */}
       <div className="p-6 flex items-center gap-3">
-        <div className="text-3xl">💰</div> 
-        {/* Jika Anda punya logo gambar, ganti div di atas dengan <Image src="/logo.png" ... /> */}
+        <div className="text-3xl">💰</div>
         <div>
           <h1 className="text-xl font-bold text-[#FBBF24]">TreasureFi</h1>
           <p className="text-[10px] text-gray-500">Quest for Gold</p>
@@ -60,29 +57,94 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* 3. PROFILE USER & LOGOUT */}
-      <div className="p-4 border-t border-white/10 m-4">
-        <div className="flex items-center gap-3">
-          {/* Avatar Kecil */}
-          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center font-bold text-white shadow-lg">
-            KS
-          </div>
-          
-          {/* Info User */}
-          <div className="overflow-hidden">
-            <p className="text-sm font-bold text-white truncate">Kepala Suku</p>
-            <p className="text-xs text-[#FBBF24]">Level 100</p>
-          </div>
-          
-          {/* Tombol Logout (Berfungsi) */}
-          <button 
-            onClick={handleLogout}
-            className="ml-auto p-2 text-gray-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
-            title="Log Out"
-          >
-            <LogOut size={18} />
-          </button>
-        </div>
+      {/* 3. PROFILE & WALLET CONNECTION */}
+      <div className="p-4 border-t border-white/10 m-4 flex flex-col gap-3">
+        
+        {/* RainbowKit Connect Button (Custom UI) */}
+        <ConnectButton.Custom>
+          {({
+            account,
+            chain,
+            openAccountModal,
+            openChainModal,
+            openConnectModal,
+            authenticationStatus,
+            mounted,
+          }) => {
+            const ready = mounted && authenticationStatus !== 'loading';
+            const connected =
+              ready &&
+              account &&
+              chain &&
+              (!authenticationStatus ||
+                authenticationStatus === 'authenticated');
+
+            return (
+              <div
+                {...(!ready && {
+                  'aria-hidden': true,
+                  'style': {
+                    opacity: 0,
+                    pointerEvents: 'none',
+                    userSelect: 'none',
+                  },
+                })}
+              >
+                {(() => {
+                  if (!connected) {
+                    return (
+                      <button 
+                        onClick={openConnectModal} 
+                        className="w-full bg-[#FBBF24] text-black font-bold py-3 rounded-xl hover:bg-yellow-500 transition shadow-lg shadow-yellow-500/10 flex justify-center items-center gap-2 text-sm"
+                      >
+                        🔗 Connect Wallet
+                      </button>
+                    );
+                  }
+
+                  if (chain.unsupported) {
+                    return (
+                      <button onClick={openChainModal} className="w-full bg-red-500 text-white font-bold py-2 rounded-xl text-sm">
+                        Wrong Network
+                      </button>
+                    );
+                  }
+
+                  return (
+                    <div className="flex items-center gap-3 bg-white/5 p-2 rounded-xl cursor-pointer hover:bg-white/10 transition border border-white/5" onClick={openAccountModal}>
+                      {/* Avatar Wallet Gradient */}
+                      <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[#FBBF24] flex-shrink-0">
+                        {account.ensAvatar ? (
+                          <img src={account.ensAvatar} alt="ENS Avatar" />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-r from-blue-500 to-purple-500" />
+                        )}
+                      </div>
+                      
+                      <div className="overflow-hidden">
+                        <p className="text-sm font-bold text-white truncate w-28">
+                          {account.displayName}
+                        </p>
+                        <p className="text-xs text-[#FBBF24]">
+                          {account.displayBalance ? `${account.displayBalance}` : ''}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+            );
+          }}
+        </ConnectButton.Custom>
+
+        {/* Tombol Logout App (Kecil di bawah) */}
+        <button 
+          onClick={handleLogout}
+          className="flex items-center justify-center gap-2 w-full p-2 text-xs text-gray-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
+        >
+          <LogOut size={14} /> Log Out App
+        </button>
+
       </div>
     </aside>
   );

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TrendingUp, ArrowUpRight, ArrowDownRight, Zap } from "lucide-react";
-import NewEntryModal from "@/components/new-entry-modal"; 
+import NewEntryModal from "@/components/new-entry-modal";
+import { Skeleton } from "@/components/skeleton";
 
 // 1. Definisi Tipe Data
 interface Goal {
@@ -16,12 +17,61 @@ interface Goal {
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // STATE LOADING (Default: True agar loading dulu saat dibuka)
+  const [isLoading, setIsLoading] = useState(true);
+
+  // SIMULASI LOADING DATA (2 Detik)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false); // Matikan loading setelah 2 detik
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const goals: Goal[] = [
     { id: 1, name: "Healing ke Bali", current: 3500000, target: 5000000, emoji: "🏖️", progress: 75 },
     { id: 2, name: "Beli Macbook M3", current: 8000000, target: 20000000, emoji: "💻", progress: 45 },
   ];
 
+  // --- TAMPILAN SAAT LOADING (SKELETON) ---
+  if (isLoading) {
+    return (
+      <div className="space-y-8 animate-in fade-in duration-500 max-w-7xl mx-auto">
+        {/* Header Skeleton */}
+        <div className="flex justify-between items-end">
+          <div className="space-y-2">
+            <Skeleton className="h-8 w-64" /> {/* Judul */}
+            <Skeleton className="h-4 w-48" /> {/* Subjudul */}
+          </div>
+          <Skeleton className="h-10 w-32 rounded-xl" /> {/* Tombol */}
+        </div>
+
+        {/* Hero Card Skeleton */}
+        <Skeleton className="h-64 w-full rounded-3xl" />
+
+        {/* Stats Row Skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Skeleton className="h-32 w-full" />
+          <Skeleton className="h-32 w-full" />
+        </div>
+
+        {/* Missions Skeleton */}
+        <div>
+          <div className="flex justify-between mb-4">
+            <Skeleton className="h-6 w-40" />
+            <Skeleton className="h-4 w-20" />
+          </div>
+          <div className="space-y-4">
+            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-24 w-full" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // --- TAMPILAN ASLI (KONTEN) ---
   return (
     <div className="space-y-8 animate-in fade-in duration-500 max-w-7xl mx-auto">
       
@@ -40,11 +90,11 @@ export default function Home() {
         </button>
       </div>
 
-      {/* Hero Card (Saldo) - PETIR DIHAPUS */}
+      {/* Hero Card (Saldo) */}
       <div className="relative overflow-hidden rounded-3xl bg-card border border-border p-8 shadow-2xl">
-        
-        {/* BAGIAN INI SAYA HAPUS (Glow/Petir Background) agar bersih */}
-        {/* <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none"> <Zap size={120} /> </div> */}
+        <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+          <Zap size={120} className="text-primary" />
+        </div>
         
         <div className="relative z-10">
           <p className="text-muted-foreground font-medium mb-2">Total Balance</p>
@@ -52,7 +102,7 @@ export default function Home() {
           
           <div className="flex gap-4">
             <button 
-              onClick={() => setIsModalOpen(true)} 
+              onClick={() => setIsModalOpen(true)}
               className="bg-primary hover:bg-yellow-500 text-primary-foreground font-bold py-2.5 px-6 rounded-xl transition-all shadow-lg shadow-primary/20"
             >
               Deposit
