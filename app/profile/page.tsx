@@ -10,10 +10,10 @@ export default function ProfilePage() {
 
   // State Data User (Bisa Diedit)
   const [user, setUser] = useState<UserData>({
-    name: "Alex Johnson",
-    title: "Level 12 Saver",
-    email: "alex@treasurefi.com",
-    bio: "Passionate about saving and investing in the crypto world."
+    name: "Kepala Suku",
+    title: "Level 100 Big Boss",
+    email: "BigBoss@treasurefi.com",
+    bio: "The man who sold crypto."
   });
 
   const handleCopy = () => {
