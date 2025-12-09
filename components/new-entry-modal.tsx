@@ -1,18 +1,29 @@
-"use client"
+"use client";
 
-import { useState } from "react"
+import { useState } from "react";
 import {
-  DollarSign, X, UtensilsCrossed, Car, ShoppingBag, Receipt,
-  Gamepad2, Heart, Briefcase, TrendingUp, Gift, Activity, 
-  MoreHorizontal 
-} from "lucide-react"
+  X,
+  UtensilsCrossed,
+  Car,
+  ShoppingBag,
+  Receipt,
+  Gamepad2,
+  Heart,
+  Briefcase,
+  TrendingUp,
+  DollarSign,
+  Gift,
+  Activity,
+  MoreHorizontal,
+} from "lucide-react";
+
 
 interface NewEntryModalProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-type TransactionType = "expense" | "income"
+type TransactionType = "expense" | "income";
 
 const expenseCategories = [
   { name: "Food & Drink", icon: UtensilsCrossed },
@@ -22,7 +33,7 @@ const expenseCategories = [
   { name: "Entertainment", icon: Gamepad2 },
   { name: "Health", icon: Heart },
   { name: "Other", icon: MoreHorizontal },
-]
+];
 
 const incomeCategories = [
   { name: "Salary", icon: Briefcase },
@@ -31,107 +42,213 @@ const incomeCategories = [
   { name: "Gift", icon: Gift },
   { name: "Trading", icon: Activity },
   { name: "Other", icon: MoreHorizontal },
-]
+];
 
 export default function NewEntryModal({ isOpen, onClose }: NewEntryModalProps) {
-  const [transactionType, setTransactionType] = useState<TransactionType>("expense")
-  const [amount, setAmount] = useState("")
-  const [activityName, setActivityName] = useState("")
-  const [category, setCategory] = useState("")
-  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false)
+  const [transactionType, setTransactionType] = useState<TransactionType>("expense");
+  const [amount, setAmount] = useState("");
+  const [activityName, setActivityName] = useState("");
+  const [category, setCategory] = useState("");
+  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [notes, setNotes] = useState("");
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
 
-  const categories = transactionType === "expense" ? expenseCategories : incomeCategories
-  const selectedCategory = categories.find((c) => c.name === category)
-  const indicatorColor = transactionType === "expense" ? "bg-red-500" : "bg-green-500"
+  const categories = transactionType === "expense" ? expenseCategories : incomeCategories;
+  const selectedCategory = categories.find((c) => c.name === category);
+  // Warna indikator: Merah untuk Expense, Hijau untuk Income (sesuai gambar referensi)
+  const indicatorColor = transactionType === "expense" ? "bg-[#EF4444]" : "bg-[#10B981]";
 
   const handleTransactionTypeChange = (type: TransactionType) => {
-    setTransactionType(type)
-    setCategory("")
-    setShowCategoryDropdown(false)
-  }
+    setTransactionType(type);
+    setCategory("");
+    setShowCategoryDropdown(false);
+  };
 
   const handleSave = () => {
+    // Validasi sederhana
     if (!amount || !activityName || !category) {
-      alert("Please fill all fields!"); // Ganti toast jadi alert biasa
-      return
+      alert("Please fill in all required fields (Amount, Name, Category).");
+      return;
     }
-    console.log("Saved:", { amount, activityName, category, transactionType })
-    
-    // Reset & Close
-    setAmount("")
-    setActivityName("")
-    setCategory("")
-    onClose()
-  }
 
-  if (!isOpen) return null
+    // Log data (bisa diganti dengan logika simpan ke state/database nanti)
+    console.log("Saving Transaction:", {
+      type: transactionType,
+      amount: Number(amount),
+      activityName,
+      category,
+      date,
+      notes,
+    });
+
+    // Reset form dan tutup modal
+    setAmount("");
+    setActivityName("");
+    setCategory("");
+    setNotes("");
+    setDate(new Date().toISOString().split("T")[0]);
+    onClose();
+  };
+
+  if (!isOpen) return null;
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40" onClick={onClose} />
-      <div className="fixed inset-0 flex items-center justify-center z-50 p-4 animate-in fade-in zoom-in-95">
-        <div className="bg-[#18181b] border border-white/10 rounded-3xl w-full max-w-md p-6 shadow-2xl relative">
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity"
+        onClick={onClose}
+      />
+
+      {/* Modal Content */}
+      <div className="fixed inset-0 flex items-center justify-center z-50 p-4 animate-in fade-in zoom-in-95 duration-200">
+        <div className="bg-[#121212] border border-white/10 rounded-3xl w-full max-w-md p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
           
+          {/* Header */}
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-white">New Entry</h2>
-            <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full text-gray-400 hover:text-white"><X className="w-5 h-5" /></button>
+            <button
+              onClick={onClose}
+              className="p-1 hover:bg-white/10 rounded-full transition-colors text-gray-400 hover:text-white"
+            >
+              <X size={24} />
+            </button>
           </div>
 
-          <div className="flex gap-2 mb-6 bg-black/40 p-1 rounded-2xl border border-white/5">
-            {["expense", "income"].map((type) => (
-              <button
-                key={type}
-                onClick={() => handleTransactionTypeChange(type as TransactionType)}
-                className={`flex-1 py-2 px-4 rounded-xl font-bold text-sm capitalize ${
-                  transactionType === type ? `${indicatorColor} text-white shadow-lg` : "text-gray-500 hover:text-white"
-                }`}
-              >
-                {type}
-              </button>
-            ))}
+          {/* Toggle Expense / Income */}
+          <div className="flex bg-[#1F1F1F] p-1 rounded-xl mb-6">
+            <button
+              onClick={() => handleTransactionTypeChange("expense")}
+              className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${
+                transactionType === "expense" ? "bg-[#EF4444] text-white shadow-md" : "text-gray-400 hover:text-white"
+              }`}
+            >
+              Expense
+            </button>
+            <button
+              onClick={() => handleTransactionTypeChange("income")}
+              className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${
+                transactionType === "income" ? "bg-[#10B981] text-white shadow-md" : "text-gray-400 hover:text-white"
+              }`}
+            >
+              Income
+            </button>
           </div>
 
-          <div className="mb-6 relative">
-            <label className="block text-gray-500 text-xs font-bold uppercase mb-2 ml-1">Amount</label>
-            <div className="relative">
-              <span className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-xl">Rp</span>
+          <div className="space-y-5">
+            {/* Amount Input */}
+            <div>
+              <label className="block text-gray-400 text-xs font-bold mb-2">Amount</label>
+              <div className="relative">
+                <input
+                  type="text" // Gunakan text agar bisa format angka lebih fleksibel jika perlu
+                  value={amount}
+                  onChange={(e) => {
+                    // Hanya izinkan angka
+                    const val = e.target.value.replace(/[^0-9]/g, "");
+                    setAmount(val);
+                  }}
+                  placeholder="0"
+                  className="w-full bg-[#1F1F1F] border border-white/5 rounded-xl py-4 px-4 text-center text-3xl font-bold text-white placeholder-gray-600 focus:outline-none focus:border-[#FBBF24] transition-all"
+                />
+                <div className="absolute inset-x-0 -bottom-6 text-center text-xs text-gray-500 font-mono">
+                  IDR {amount ? Number(amount).toLocaleString("id-ID") : "0"}
+                </div>
+              </div>
+            </div>
+
+            {/* Activity Name */}
+            <div className="mt-6">
+              <label className="block text-gray-400 text-xs font-bold mb-2">Activity Name</label>
               <input
                 type="text"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
-                placeholder="0"
-                className="w-full bg-[#09090b] border border-white/10 rounded-2xl pl-14 pr-6 py-4 text-3xl font-bold text-white focus:outline-none focus:border-[#FBBF24] text-right"
+                value={activityName}
+                onChange={(e) => setActivityName(e.target.value)}
+                placeholder="e.g., Nasi Padang"
+                className="w-full bg-[#1F1F1F] border border-white/5 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-[#FBBF24] transition-all"
+              />
+            </div>
+
+            {/* Category Dropdown */}
+            <div className="relative">
+              <label className="block text-gray-400 text-xs font-bold mb-2">Category</label>
+              <button
+                type="button"
+                onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
+                className="w-full bg-[#1F1F1F] border border-white/5 rounded-xl px-4 py-3 text-white flex items-center justify-between hover:border-white/20 transition-colors text-left"
+              >
+                {selectedCategory ? (
+                  <div className="flex items-center gap-3">
+                    <selectedCategory.icon className="w-5 h-5 text-[#FBBF24]" />
+                    <span>{selectedCategory.name}</span>
+                  </div>
+                ) : (
+                  <span className="text-gray-500">Select category</span>
+                )}
+              </button>
+
+              {/* Dropdown Menu */}
+              {showCategoryDropdown && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-[#1F1F1F] border border-white/10 rounded-xl overflow-hidden z-50 shadow-xl max-h-48 overflow-y-auto">
+                  {categories.map((cat) => (
+                    <button
+                      key={cat.name}
+                      onClick={() => {
+                        setCategory(cat.name);
+                        setShowCategoryDropdown(false);
+                      }}
+                      className="w-full px-4 py-3 hover:bg-white/5 flex items-center gap-3 text-white text-left border-b border-white/5 last:border-b-0 transition-colors"
+                    >
+                      <cat.icon className="w-4 h-4 text-gray-400" />
+                      <span className="text-sm">{cat.name}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Date Input */}
+            <div>
+              <label className="block text-gray-400 text-xs font-bold mb-2">Date</label>
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="w-full bg-[#1F1F1F] border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#FBBF24] transition-all [color-scheme:dark]"
+              />
+            </div>
+
+            {/* Notes (Optional) */}
+            <div>
+              <label className="block text-gray-400 text-xs font-bold mb-2">Notes (Optional)</label>
+              <textarea
+                rows={3}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Add any additional notes..."
+                className="w-full bg-[#1F1F1F] border border-white/5 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-[#FBBF24] transition-all resize-none"
               />
             </div>
           </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-500 text-xs font-bold uppercase mb-2 ml-1">Activity Name</label>
-            <input type="text" value={activityName} onChange={(e) => setActivityName(e.target.value)} placeholder="e.g., Nasi Padang" className="w-full bg-[#09090b] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#FBBF24]" />
-          </div>
-
-          <div className="mb-4 relative">
-            <label className="block text-gray-500 text-xs font-bold uppercase mb-2 ml-1">Category</label>
-            <button onClick={() => setShowCategoryDropdown(!showCategoryDropdown)} className="w-full bg-[#09090b] border border-white/10 rounded-xl px-4 py-3 text-white flex items-center gap-3 text-left">
-              {selectedCategory ? <><selectedCategory.icon className="w-5 h-5 text-[#FBBF24]" /><span>{selectedCategory.name}</span></> : <span className="text-gray-600">Select category</span>}
+          {/* Footer Actions */}
+          <div className="flex gap-3 mt-8 pt-4 border-t border-white/5">
+            <button
+              onClick={onClose}
+              className="flex-1 px-4 py-3 rounded-xl border border-white/10 text-white font-bold hover:bg-white/5 transition-colors"
+            >
+              Cancel
             </button>
-            {showCategoryDropdown && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-[#18181b] border border-white/10 rounded-2xl overflow-hidden z-50 shadow-2xl max-h-48 overflow-y-auto">
-                {categories.map((cat) => (
-                  <button key={cat.name} onClick={() => { setCategory(cat.name); setShowCategoryDropdown(false) }} className="w-full px-4 py-3 hover:bg-white/5 flex items-center gap-3 text-white text-left border-b border-white/5">
-                    <cat.icon className="w-4 h-4 text-gray-400" />{cat.name}
-                  </button>
-                ))}
-              </div>
-            )}
+            <button
+              onClick={handleSave}
+              className="flex-1 px-4 py-3 rounded-xl bg-[#FBBF24] text-black font-bold hover:bg-yellow-500 transition-colors shadow-lg shadow-yellow-500/20"
+            >
+              Save Transaction
+            </button>
           </div>
 
-          <div className="flex gap-3 mt-8">
-            <button onClick={onClose} className="flex-1 px-4 py-3 rounded-xl border border-white/10 text-gray-400 font-bold">Cancel</button>
-            <button onClick={handleSave} className="flex-1 px-4 py-3 rounded-xl bg-[#FBBF24] text-black font-bold">Save</button>
-          </div>
         </div>
       </div>
     </>
-  )
+  );
 }

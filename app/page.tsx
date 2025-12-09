@@ -5,79 +5,145 @@ import { useRouter } from "next/navigation";
 import { TrendingUp, ArrowUpRight, ArrowDownRight, Zap } from "lucide-react";
 import NewEntryModal from "@/components/new-entry-modal";
 
-interface Goal {
-  id: number;
-  name: string;
-  current: number;
-  target: number;
-  emoji: string;
-  progress: number;
-}
-
 export default function Home() {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Auth Check Sederhana
+  // --- 1. LOGIKA SATPAM (CHECK TOKEN) ---
   useEffect(() => {
     const token = localStorage.getItem("user_token");
     if (!token) {
       router.push("/auth/signin");
     } else {
-      setIsLoading(false); 
+      // Hilangkan loading lebih cepat biar UX enak
+      setIsLoading(false);
     }
   }, [router]);
 
-  const goals: Goal[] = [
-    { id: 1, name: "Healing ke Bali", current: 3500000, target: 5000000, emoji: "🏖️", progress: 75 },
-    { id: 2, name: "Beli Macbook M3", current: 8000000, target: 20000000, emoji: "💻", progress: 45 },
+  // Data Dummy Missions
+  const activeMissions = [
+    { id: 1, title: "Healing ke Bali", progress: 75, color: "bg-cyan-400" },
+    { id: 2, title: "Save for MacBook Pro", progress: 45, color: "bg-pink-500" },
   ];
 
-  if (isLoading) return null; 
+  // Tampilan Loading (Hitam Kosong biar ga flickering)
+  if (isLoading) return <div className="min-h-screen bg-[#09090b]" />;
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500 max-w-7xl mx-auto">
-      {/* Header */}
+    <div className="space-y-8 animate-in fade-in duration-500 max-w-7xl mx-auto pb-10">
+      
+      {/* --- HEADER --- */}
       <div className="flex justify-between items-end">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Welcome Back, Kepala Suku!</h1>
-          <p className="text-muted-foreground">Track your financial quest and earn rewards</p>
+          <h1 className="text-3xl font-bold text-white">Welcome Back, Kepala Suku!</h1>
+          <p className="text-gray-400">Track your financial quest and earn rewards</p>
         </div>
         <button 
           onClick={() => setIsModalOpen(true)}
-          className="bg-primary hover:bg-yellow-500 text-primary-foreground font-bold py-2.5 px-6 rounded-xl transition-all flex items-center gap-2"
+          className="bg-[#FBBF24] hover:bg-yellow-500 text-black font-bold py-2.5 px-6 rounded-xl transition-all shadow-lg shadow-yellow-500/20 flex items-center gap-2"
         >
           + New Entry
         </button>
       </div>
 
-      {/* Hero Card */}
-      <div className="relative overflow-hidden rounded-3xl bg-card border border-border p-8 shadow-2xl">
-        <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none"><Zap size={120} /></div>
+      {/* --- HERO CARD (SALDO) --- */}
+      <div className="relative overflow-hidden rounded-3xl bg-[#18181b] border border-white/10 p-8 shadow-2xl">
+        {/* Ikon Petir Background Transparan */}
+        <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
+          <Zap size={120} />
+        </div>
+        
         <div className="relative z-10">
-          <p className="text-muted-foreground font-medium mb-2">Total Balance</p>
-          <h2 className="text-5xl font-extrabold text-white mb-6">IDR 24,500,000</h2>
+          <p className="text-gray-400 font-medium mb-2">Total Balance</p>
+          <h2 className="text-5xl font-extrabold text-white mb-2">IDR 24,500,000</h2>
+          
+          <div className="flex items-center gap-2 text-green-400 text-sm font-bold mb-6">
+            <TrendingUp size={16} />
+            <span>+12.5% from last month</span>
+          </div>
+          
           <div className="flex gap-4">
-            <button className="bg-primary hover:bg-yellow-500 text-primary-foreground font-bold py-2.5 px-6 rounded-xl">Deposit</button>
-            <button className="bg-secondary/50 border border-border hover:bg-secondary text-foreground font-bold py-2.5 px-6 rounded-xl">Withdraw</button>
+            {/* --- PERBAIKAN DISINI --- */}
+            <button 
+              onClick={() => setIsModalOpen(true)} 
+              className="bg-[#FBBF24] hover:bg-yellow-500 text-black font-bold py-2.5 px-8 rounded-xl transition-colors"
+            >
+              Deposit
+            </button>
+            
+            <button 
+              onClick={() => setIsModalOpen(true)}
+              className="bg-transparent border border-white/20 hover:bg-white/5 text-white font-bold py-2.5 px-8 rounded-xl transition-colors"
+            >
+              Withdraw
+            </button>
+            {/* ------------------------ */}
           </div>
         </div>
       </div>
 
-      {/* Stats */}
+      {/* --- STATS ROW --- */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-card p-6 rounded-2xl border border-border shadow-sm flex justify-between items-center">
-          <div><p className="text-muted-foreground">Total Income</p><h3 className="text-2xl font-bold text-foreground">IDR 32,750,000</h3></div>
-          <div className="bg-green-500/10 p-3 rounded-xl"><ArrowUpRight className="text-green-500" /></div>
+        {/* Spending */}
+        <div className="bg-[#18181b] p-6 rounded-2xl border border-white/10 shadow-sm flex justify-between items-center relative overflow-hidden group">
+            <div className="absolute inset-0 bg-red-500/5 translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
+            <div className="relative z-10">
+                <p className="text-gray-400 text-sm mb-1">Total Spending</p>
+                <h3 className="text-2xl font-bold text-white">IDR 8,250,000</h3>
+            </div>
+            <div className="relative z-10 bg-red-500/10 p-3 rounded-xl border border-red-500/20">
+                <ArrowDownRight className="text-red-500" size={20} />
+            </div>
         </div>
-        <div className="bg-card p-6 rounded-2xl border border-border shadow-sm flex justify-between items-center">
-          <div><p className="text-muted-foreground">Total Spending</p><h3 className="text-2xl font-bold text-foreground">IDR 8,250,000</h3></div>
-          <div className="bg-red-500/10 p-3 rounded-xl"><ArrowDownRight className="text-red-500" /></div>
+
+        {/* Income */}
+        <div className="bg-[#18181b] p-6 rounded-2xl border border-white/10 shadow-sm flex justify-between items-center relative overflow-hidden group">
+            <div className="absolute inset-0 bg-green-500/5 translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
+            <div className="relative z-10">
+                <p className="text-gray-400 text-sm mb-1">Total Income</p>
+                <h3 className="text-2xl font-bold text-white">IDR 32,750,000</h3>
+            </div>
+            <div className="relative z-10 bg-green-500/10 p-3 rounded-xl border border-green-500/20">
+                <ArrowUpRight className="text-green-500" size={20} />
+            </div>
         </div>
       </div>
 
+      {/* --- ACTIVE MISSIONS (BARU) --- */}
+      <div>
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-xl font-bold text-white flex items-center gap-2">
+            <Zap className="text-[#FBBF24] fill-[#FBBF24]" size={20} /> Active Missions
+          </h3>
+          <button className="text-[#FBBF24] text-sm font-bold hover:underline">
+            View All &gt;
+          </button>
+        </div>
+
+        <div className="space-y-5">
+          {activeMissions.map((mission) => (
+            <div key={mission.id} className="bg-[#18181b] border border-white/10 p-6 rounded-2xl">
+              <div className="flex justify-between items-center mb-3">
+                <h4 className="font-bold text-white text-lg">{mission.title}</h4>
+                <span className="font-bold text-white">{mission.progress}%</span>
+              </div>
+              
+              {/* Progress Bar Container */}
+              <div className="w-full bg-white/5 h-3 rounded-full overflow-hidden">
+                <div 
+                  className={`h-full ${mission.color} rounded-full transition-all duration-1000 ease-out`}
+                  style={{ width: `${mission.progress}%` }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Modal Popup */}
       <NewEntryModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+
     </div>
   );
 }
