@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Copy, CheckCircle, Edit, Zap, Trophy } from "lucide-react";
 // FIX IMPORT PATH: Sesuai screenshot explorer anda, nama filenya 'edit-profile.tsx' (kecil semua pakai strip)
-import EditProfileModal from "@/components/edit-profile"; 
+import EditProfileModal from "@/components/EditProfileModal"; 
 
 // Interface user data
 export interface UserData {

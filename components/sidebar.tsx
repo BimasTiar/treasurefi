@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Home, Zap, Gift, User, LogOut, ScrollText } from "lucide-react";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -18,6 +17,7 @@ export default function Sidebar() {
   ];
 
   const handleLogout = () => {
+    // Hapus token dan kembali ke login
     localStorage.removeItem("user_token");
     router.push("/auth/signin");
   };
@@ -34,7 +34,7 @@ export default function Sidebar() {
         </div>
       </div>
 
-      {/* 2. MENU NAVIGASI */}
+      {/* 2. MENU */}
       <nav className="flex-1 px-4 space-y-2 mt-4">
         {menuItems.map((item) => {
           const isActive = pathname === item.href;
@@ -57,94 +57,25 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* 3. PROFILE & WALLET CONNECTION */}
-      <div className="p-4 border-t border-white/10 m-4 flex flex-col gap-3">
-        
-        {/* RainbowKit Connect Button (Custom UI) */}
-        <ConnectButton.Custom>
-          {({
-            account,
-            chain,
-            openAccountModal,
-            openChainModal,
-            openConnectModal,
-            authenticationStatus,
-            mounted,
-          }) => {
-            const ready = mounted && authenticationStatus !== 'loading';
-            const connected =
-              ready &&
-              account &&
-              chain &&
-              (!authenticationStatus ||
-                authenticationStatus === 'authenticated');
-
-            return (
-              <div
-                {...(!ready && {
-                  'aria-hidden': true,
-                  'style': {
-                    opacity: 0,
-                    pointerEvents: 'none',
-                    userSelect: 'none',
-                  },
-                })}
-              >
-                {(() => {
-                  if (!connected) {
-                    return (
-                      <button 
-                        onClick={openConnectModal} 
-                        className="w-full bg-[#FBBF24] text-black font-bold py-3 rounded-xl hover:bg-yellow-500 transition shadow-lg shadow-yellow-500/10 flex justify-center items-center gap-2 text-sm"
-                      >
-                        🔗 Connect Wallet
-                      </button>
-                    );
-                  }
-
-                  if (chain.unsupported) {
-                    return (
-                      <button onClick={openChainModal} className="w-full bg-red-500 text-white font-bold py-2 rounded-xl text-sm">
-                        Wrong Network
-                      </button>
-                    );
-                  }
-
-                  return (
-                    <div className="flex items-center gap-3 bg-white/5 p-2 rounded-xl cursor-pointer hover:bg-white/10 transition border border-white/5" onClick={openAccountModal}>
-                      {/* Avatar Wallet Gradient */}
-                      <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[#FBBF24] flex-shrink-0">
-                        {account.ensAvatar ? (
-                          <img src={account.ensAvatar} alt="ENS Avatar" />
-                        ) : (
-                          <div className="w-full h-full bg-gradient-to-r from-blue-500 to-purple-500" />
-                        )}
-                      </div>
-                      
-                      <div className="overflow-hidden">
-                        <p className="text-sm font-bold text-white truncate w-28">
-                          {account.displayName}
-                        </p>
-                        <p className="text-xs text-[#FBBF24]">
-                          {account.displayBalance ? `${account.displayBalance}` : ''}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })()}
-              </div>
-            );
-          }}
-        </ConnectButton.Custom>
-
-        {/* Tombol Logout App (Kecil di bawah) */}
-        <button 
-          onClick={handleLogout}
-          className="flex items-center justify-center gap-2 w-full p-2 text-xs text-gray-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
-        >
-          <LogOut size={14} /> Log Out App
-        </button>
-
+      {/* 3. PROFILE & LOGOUT */}
+      <div className="p-4 border-t border-white/10 m-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center font-bold text-white shadow-lg">
+            KS
+          </div>
+          <div className="overflow-hidden">
+            <p className="text-sm font-bold text-white">Kepala Suku</p>
+            <p className="text-xs text-[#FBBF24]">Level 100</p>
+          </div>
+          
+          <button 
+            onClick={handleLogout}
+            className="ml-auto p-2 text-gray-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
+            title="Log Out"
+          >
+            <LogOut size={18} />
+          </button>
+        </div>
       </div>
     </aside>
   );

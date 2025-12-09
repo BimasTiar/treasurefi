@@ -2,14 +2,12 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Sidebar from "@/components/sidebar"; 
 import "./globals.css";
-import Providers from "./providers";
-import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "TreasureFi",
-  description: "Gamified Savings App",
+  description: "Quest for Gold",
 };
 
 export default function RootLayout({
@@ -20,23 +18,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Providers>
-          <div className="flex min-h-screen bg-[#09090b]">
-            <Sidebar />
-            
-            <main className="flex-1 ml-64 p-8 overflow-y-auto h-screen text-white">
-              {children}
-            </main>
-          </div>
-          
-          {/* 2. Pasang Komponen Toaster di sini */}
-          <Toaster 
-            position="top-right" 
-            theme="dark" 
-            richColors 
-            closeButton
-          />
-        </Providers>
+        <div className="flex min-h-screen bg-[#09090b]">
+          <Sidebar />
+          <main className="flex-1 ml-64 p-8 overflow-y-auto h-screen text-white">
+            {children}
+          </main>
+        </div>
       </body>
     </html>
   );
