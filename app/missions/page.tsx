@@ -1,60 +1,104 @@
 "use client";
 
-import { CheckCircle2, Coins } from "lucide-react";
-import { useState } from "react";
-
-
-interface Mission {
-  id: number;
-  title: string;
-  xp: number;
-  completed: boolean;
-  type: "daily" | "weekly";
-  emoji: string;
-}
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Toaster } from "sonner";
+import { getUnifiedMissions, claimUnifiedMission, safeUid } from "@/src/lib/missionsUnified";
 
 export default function MissionsPage() {
-  const [missions, setMissions] = useState<Mission[]>([
-    { id: 1, title: "Save Rp 50k Today", xp: 50, completed: false, type: "daily", emoji: "💰" },
-    { id: 2, title: "Read Crypto News", xp: 10, completed: false, type: "daily", emoji: "📰" },
-    { id: 3, title: "Track Expenses", xp: 40, completed: false, type: "daily", emoji: "📊" },
-    { id: 4, title: "Invite a Friend", xp: 100, completed: false, type: "weekly", emoji: "🤝" },
-  ]);
+  const router = useRouter();
 
-  const handleClaim = (id: number) => {
-    setMissions(missions.map((m) => (m.id === id ? { ...m, completed: true } : m)));
-  };
+  const [missions, setMissions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const [userRole, setUserRole] = useState("user");
+
+  useEffect(() => {
+    let mounted = true;
+
+    (async () => {
+      try {
+        const uid = safeUid();
+        if (!uid) {
+          router.push("/auth/signin");
+          return;
+        }
+
+        const unified = await getUnifiedMissions(uid);
+
+        if (mounted) setMissions(unified);
+      } catch (err) {
+        console.error("Load missions error:", err);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+
+    return () => { mounted = false };
+  }, [router]);
+
+  async function handleClaim(m: any) {
+    try {
+      const uid = safeUid();
+      if (!uid) return;
+
+      const ok = await claimUnifiedMission(uid, m.id);
+      if (!ok) {
+        console.error("Claim failed");
+        return;
+      }
+
+      setMissions(await getUnifiedMissions(uid));
+    } catch (err) {
+      console.error("Error claiming:", err);
+    }
+  }
+
+  if (loading) return <div className="p-6 text-gray-400">Loading missions...</div>;
 
   return (
-    <div className="max-w-4xl mx-auto animate-in fade-in duration-500">
-      <h1 className="text-3xl font-bold mb-2 text-white">Missions</h1>
-      <p className="text-gray-400 mb-8">Complete quests to earn XP and rewards</p>
+    <div className="max-w-4xl mx-auto p-6 space-y-6">
+      <Toaster />
+      
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold">Missions</h1>
+
+        {userRole === "admin" && (
+          <button
+            onClick={() => router.push("/mission/new")}
+            className="bg-yellow-500 text-black px-4 py-2 rounded-lg font-bold hover:bg-yellow-400"
+          >
+            + Add Mission
+          </button>
+        )}
+      </div>
 
       <div className="space-y-4">
-        {missions.map((mission) => (
-          <div key={mission.id} className="bg-[#18181b] p-5 rounded-2xl border border-white/10 flex items-center justify-between shadow-lg hover:border-[#FBBF24]/20 transition-all">
-            <div className="flex items-center gap-4">
-              <span className="text-3xl bg-white/5 p-3 rounded-2xl">{mission.emoji}</span>
-              <div>
-                <h3 className="font-bold text-white text-lg">{mission.title}</h3>
-                <div className="flex items-center gap-1 text-[#FBBF24] text-xs font-bold mt-1 bg-[#FBBF24]/10 px-2 py-1 rounded-md w-fit">
-                  <Coins size={12} /> +{mission.xp} XP
-                </div>
-              </div>
+        {missions.length === 0 && (
+          <div className="text-gray-400">No missions found</div>
+        )}
+
+        {missions.map((m: any) => (
+          <div key={m.id} className="bg-[#111] p-4 rounded-lg flex justify-between items-center">
+            <div>
+              <div className="font-bold text-white">{m.title}</div>
+              <div className="text-sm text-gray-400">{m.progress}%</div>
             </div>
-            
-            {mission.completed ? (
-              <div className="px-5 py-2 bg-green-500/10 text-green-500 rounded-xl flex items-center gap-2 text-sm font-bold border border-green-500/20">
-                <CheckCircle2 size={18} /> Done
-              </div>
-            ) : (
-              <button 
-                onClick={() => handleClaim(mission.id)}
-                className="bg-[#3B82F6] hover:bg-blue-600 text-white px-6 py-2.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-blue-900/20"
-              >
-                Start
-              </button>
-            )}
+
+            <div>
+              {m.completed ? (
+                <div className="text-green-400">Completed</div>
+              ) : m.progress >= 100 ? (
+                <button
+                  onClick={() => handleClaim(m)}
+                  className="bg-[#FBBF24] px-4 py-2 rounded font-bold hover:bg-yellow-400"
+                >
+                  Claim XP
+                </button>
+              ) : (
+                <div className="text-xs text-gray-400">Complete to claim</div>
+              )}
+            </div>
           </div>
         ))}
       </div>

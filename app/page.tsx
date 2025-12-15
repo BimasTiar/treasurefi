@@ -1,149 +1,144 @@
+// app/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { TrendingUp, ArrowUpRight, ArrowDownRight, Zap } from "lucide-react";
+import { Toaster } from "sonner";
 import NewEntryModal from "@/components/new-entry-modal";
+import { Zap } from "lucide-react";
+import { fetchDashboardData } from "@/src/lib/getUserData";
+import { getUnifiedMissions, safeUid } from "@/src/lib/missionsUnified";
 
 export default function Home() {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [data, setData] = useState<any>(null);
+  const [missions, setMissions] = useState<any[]>([]);
 
-  // --- 1. LOGIKA SATPAM (CHECK TOKEN) ---
+  async function refreshData() {
+    const uid = safeUid();
+    if (!uid) return;
+
+    const updated = await fetchDashboardData(uid);
+    setData(updated);
+
+    const unified = await getUnifiedMissions(uid);
+    setMissions(unified);
+  }
+
   useEffect(() => {
-    const token = localStorage.getItem("user_token");
-    if (!token) {
-      router.push("/auth/signin");
-    } else {
-      // Hilangkan loading lebih cepat biar UX enak
-      setIsLoading(false);
-    }
+    (async () => {
+      try {
+        const uid = safeUid();
+        if (!uid) {
+          router.push("/auth/signin");
+          return;
+        }
+        const res = await fetchDashboardData(uid);
+        setData(res || {});
+
+        const unified = await getUnifiedMissions(uid);
+        setMissions(unified);
+      } catch (err) {
+        console.error("Dashboard error:", err);
+        router.push("/auth/signin");
+      } finally {
+        setIsLoading(false);
+      }
+    })();
   }, [router]);
 
-  // Data Dummy Missions
-  const activeMissions = [
-    { id: 1, title: "Healing ke Bali", progress: 75, color: "bg-cyan-400" },
-    { id: 2, title: "Save for MacBook Pro", progress: 45, color: "bg-pink-500" },
-  ];
+  async function handleClaim(mission: any) {
+    try {
+      const uid = safeUid();
+      if (!uid) return;
 
-  // Tampilan Loading (Hitam Kosong biar ga flickering)
+      const ok = await (await import("@/src/lib/missionsUnified"))
+        .claimUnifiedMission(uid, mission.id);
+
+      if (ok) {
+        await refreshData();
+      } else {
+        console.error("claim failed");
+      }
+    } catch (err) {
+      console.error("Claim error:", err);
+    }
+  }
+
   if (isLoading) return <div className="min-h-screen bg-[#09090b]" />;
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500 max-w-7xl mx-auto pb-10">
-      
-      {/* --- HEADER --- */}
+    <div className="space-y-8 max-w-7xl mx-auto pb-10 p-6">
+      <Toaster />
+
       <div className="flex justify-between items-end">
         <div>
-          <h1 className="text-3xl font-bold text-white">Welcome Back, Kepala Suku!</h1>
+          <h1 className="text-3xl font-bold text-white">
+            Welcome Back, {data?.name || "User"}!
+          </h1>
           <p className="text-gray-400">Track your financial quest and earn rewards</p>
         </div>
-        <button 
+
+        <button
           onClick={() => setIsModalOpen(true)}
-          className="bg-[#FBBF24] hover:bg-yellow-500 text-black font-bold py-2.5 px-6 rounded-xl transition-all shadow-lg shadow-yellow-500/20 flex items-center gap-2"
+          className="bg-[#FBBF24] text-black font-bold py-2.5 px-6 rounded-xl"
         >
           + New Entry
         </button>
       </div>
 
-      {/* --- HERO CARD (SALDO) --- */}
-      <div className="relative overflow-hidden rounded-3xl bg-[#18181b] border border-white/10 p-8 shadow-2xl">
-        {/* Ikon Petir Background Transparan */}
-        <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
-          <Zap size={120} />
-        </div>
-        
-        <div className="relative z-10">
-          <p className="text-gray-400 font-medium mb-2">Total Balance</p>
-          <h2 className="text-5xl font-extrabold text-white mb-2">IDR 24,500,000</h2>
-          
-          <div className="flex items-center gap-2 text-green-400 text-sm font-bold mb-6">
-            <TrendingUp size={16} />
-            <span>+12.5% from last month</span>
-          </div>
-          
-          <div className="flex gap-4">
-            {/* --- PERBAIKAN DISINI --- */}
-            <button 
-              onClick={() => setIsModalOpen(true)} 
-              className="bg-[#FBBF24] hover:bg-yellow-500 text-black font-bold py-2.5 px-8 rounded-xl transition-colors"
-            >
-              Deposit
-            </button>
-            
-            <button 
-              onClick={() => setIsModalOpen(true)}
-              className="bg-transparent border border-white/20 hover:bg-white/5 text-white font-bold py-2.5 px-8 rounded-xl transition-colors"
-            >
-              Withdraw
-            </button>
-            {/* ------------------------ */}
-          </div>
+      <div className="bg-[#18181b] p-6 rounded-3xl border border-white/10">
+        <h2 className="text-5xl font-extrabold text-white mb-2">
+          IDR {(data?.totalBalance || 0).toLocaleString("id-ID")}
+        </h2>
+
+        <div className="flex items-center gap-2 text-green-400 text-sm font-bold mb-6">
+          <Zap size={16} />
+          <span>
+            {data?.totalIncome && data?.totalSpending
+              ? `${(((data.totalIncome - data.totalSpending) / Math.max(1, data.totalSpending)) * 100).toFixed(1)}%`
+              : "+0%"} from last month
+          </span>
         </div>
       </div>
 
-      {/* --- STATS ROW --- */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Spending */}
-        <div className="bg-[#18181b] p-6 rounded-2xl border border-white/10 shadow-sm flex justify-between items-center relative overflow-hidden group">
-            <div className="absolute inset-0 bg-red-500/5 translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
-            <div className="relative z-10">
-                <p className="text-gray-400 text-sm mb-1">Total Spending</p>
-                <h3 className="text-2xl font-bold text-white">IDR 8,250,000</h3>
-            </div>
-            <div className="relative z-10 bg-red-500/10 p-3 rounded-xl border border-red-500/20">
-                <ArrowDownRight className="text-red-500" size={20} />
-            </div>
-        </div>
-
-        {/* Income */}
-        <div className="bg-[#18181b] p-6 rounded-2xl border border-white/10 shadow-sm flex justify-between items-center relative overflow-hidden group">
-            <div className="absolute inset-0 bg-green-500/5 translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
-            <div className="relative z-10">
-                <p className="text-gray-400 text-sm mb-1">Total Income</p>
-                <h3 className="text-2xl font-bold text-white">IDR 32,750,000</h3>
-            </div>
-            <div className="relative z-10 bg-green-500/10 p-3 rounded-xl border border-green-500/20">
-                <ArrowUpRight className="text-green-500" size={20} />
-            </div>
-        </div>
-      </div>
-
-      {/* --- ACTIVE MISSIONS (BARU) --- */}
       <div>
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-bold text-white flex items-center gap-2">
-            <Zap className="text-[#FBBF24] fill-[#FBBF24]" size={20} /> Active Missions
-          </h3>
-          <button className="text-[#FBBF24] text-sm font-bold hover:underline">
-            View All &gt;
-          </button>
-        </div>
-
-        <div className="space-y-5">
-          {activeMissions.map((mission) => (
-            <div key={mission.id} className="bg-[#18181b] border border-white/10 p-6 rounded-2xl">
-              <div className="flex justify-between items-center mb-3">
-                <h4 className="font-bold text-white text-lg">{mission.title}</h4>
-                <span className="font-bold text-white">{mission.progress}%</span>
+        <h3 className="text-xl font-bold text-white mb-4">Active Missions</h3>
+        <div className="space-y-4">
+          {missions.map((m) => (
+            <div
+              key={m.id}
+              className="bg-[#18181b] p-4 rounded-2xl border border-white/10 flex justify-between items-center"
+            >
+              <div>
+                <div className="font-bold text-white">{m.title}</div>
+                <div className="text-sm text-gray-400">{m.progress}%</div>
               </div>
-              
-              {/* Progress Bar Container */}
-              <div className="w-full bg-white/5 h-3 rounded-full overflow-hidden">
-                <div 
-                  className={`h-full ${mission.color} rounded-full transition-all duration-1000 ease-out`}
-                  style={{ width: `${mission.progress}%` }}
-                />
+
+              <div>
+                {!m.completed && m.progress >= 100 ? (
+                  <button
+                    onClick={() => handleClaim(m)}
+                    className="bg-[#FBBF24] text-black px-4 py-2 rounded-lg"
+                  >
+                    Claim
+                  </button>
+                ) : m.completed ? (
+                  <div className="text-green-400 font-bold">Completed</div>
+                ) : null}
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Modal Popup */}
-      <NewEntryModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-
+      <NewEntryModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onCreated={refreshData}
+      />
     </div>
   );
 }

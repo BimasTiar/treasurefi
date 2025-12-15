@@ -5,39 +5,26 @@ import { useRouter, usePathname } from "next/navigation";
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const pathname = usePathname(); // Untuk tahu kita sedang di halaman mana
-  const [isAuthorized, setIsAuthorized] = useState(false);
+  const pathname = usePathname();
+  const [checked, setChecked] = useState(false);
 
   useEffect(() => {
+    if (!pathname) return;
+
     const token = localStorage.getItem("user_token");
-    
-    // Daftar halaman yang boleh diakses TANPA login (Public Routes)
-    const publicPaths = ["/auth/signin", "/auth/signup"];
 
-    // Cek apakah halaman saat ini adalah halaman publik
-    const isPublicPage = publicPaths.some((path) => pathname.startsWith(path));
+    const publicPages = ["/auth/signin", "/auth/signup"];
+    const isPublic = publicPages.some((p) => pathname.startsWith(p));
 
-    if (isPublicPage) {
-      // Kalau mau ke Login/Signup, silakan lewat
-      setIsAuthorized(true);
-    } else {
-      // Kalau mau ke halaman lain (Home, Profile, dll)
-      if (!token) {
-        // Gak punya token? Tendang ke Sign In
-        router.push("/auth/signin");
-      } else {
-        // Punya token? Silakan masuk
-        setIsAuthorized(true);
-      }
+    if (!token && !isPublic) {
+      router.replace("/auth/signin");
+      return;
     }
-  }, [router, pathname]);
 
-  // Selama pemeriksaan, jangan tampilkan konten apa-apa (Layar Hitam)
-  // Ini mencegah "Flash" konten yang sempat terlihat sekilas
-  if (!isAuthorized) {
-    return <div className="min-h-screen bg-[#09090b]" />;
-  }
+    setChecked(true);
+  }, [pathname]);
 
-  // Jika lolos pemeriksaan, tampilkan halaman
+  if (!checked) return <div className="min-h-screen bg-[#09090b]" />;
+
   return <>{children}</>;
 }
